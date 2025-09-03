@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Портфолио - Строительная компания "Бобры"</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="Наши реализованные проекты">
+    <link rel="icon" href="image/building_city_icon_263721.ico" type="img/x-icon">
+</head>
+<body>
+    <header>
+        <h1>Строительная Компания "Бобры"</h1>
+        <nav>
+            <a href="index.html">Главная</a>
+            <a href="about.html">О нас</a>
+            <a href="services.html">Услуги</a>
+            <a href="portfolio.html">Портфолио</a>
+            <a href="contacts.html">Контакты</a>
+        </nav>
+    </header>
+
+    <main class="portfolio-page">
+        <h2>Наши проекты</h2>
+        
+        <div class="portfolio-controls">
+            <div class="search-bar">
+                <input type="text" id="project-search" placeholder="Поиск проектов...">
+                <button id="search-btn" class="btn">Найти</button>
+            </div>
+            
+            <div class="filters">
+                <select id="type-filter">
+                    <option value="all">Все типы</option>
+                    <option value="cottage">Коттеджи</option>
+                    <option value="townhouse">Таунхаусы</option>
+                    <option value="apartment">Многоэтажки</option>
+                </select>
+                
+                <select id="size-filter">
+                    <option value="all">Любая площадь</option>
+                    <option value="small">До 100 м²</option>
+                    <option value="medium">100-200 м²</option>
+                    <option value="large">Более 200 м²</option>
+                </select>
+                
+                <select id="year-filter">
+                    <option value="all">Все годы</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                    <option value="2021">2021</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="projects-grid">
+        </div>
+    </main>
+
+    <footer class="great-vibes-regular">
+        <p>&copy; Строительная компания "Бобры" 2025</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const projects = [
+                {
+                    id: 1,
+                    title: "Проект 'Солнечный дом'",
+                    type: "cottage",
+                    size: 200,
+                    year: 2023,
+                    image: "image/port1.png",
+                    description: "Просторный коттедж с панорамными окнами"
+                },
+                {
+                    id: 2,
+                    title: "Проект 'Загородный оазис'",
+                    type: "cottage",
+                    size: 150,
+                    year: 2022,
+                    image: "image/port2.png",
+                    description: "Уютный дом с террасой и бассейном"
+                },
+                {
+                    id: 3,
+                    title: "Проект 'Городской уют'",
+                    type: "townhouse",
+                    size: 120,
+                    year: 2023,
+                    image: "image/port3.png",
+                    description: "Современный таунхаус в черте города"
+                },
+                {
+                    id: 4,
+                    title: "Проект 'Комфортный квартал'",
+                    type: "townhouse",
+                    size: 100,
+                    year: 2021,
+                    image: "image/port4.png",
+                    description: "Комплекс таунхаусов с общей инфраструктурой"
+                },
+                {
+                    id: 5,
+                    title: "Проект 'Достань до неба'",
+                    type: "apartment",
+                    size: 5000,
+                    year: 2023,
+                    image: "image/port5.png",
+                    description: "25-этажный жилой комплекс"
+                },
+                {
+                    id: 6,
+                    title: "Проект 'Муровейник'",
+                    type: "apartment",
+                    size: 3500,
+                    year: 2022,
+                    image: "image/port6.png",
+                    description: "Жилой комплекс с развитой инфраструктурой"
+                }
+            ];
+            
+            const projectsGrid = document.querySelector('.projects-grid');
+            const searchInput = document.getElementById('project-search');
+            const searchBtn = document.getElementById('search-btn');
+            const typeFilter = document.getElementById('type-filter');
+            const sizeFilter = document.getElementById('size-filter');
+            const yearFilter = document.getElementById('year-filter');
+            
+            // Функция отображения проектов
+            function displayProjects(filteredProjects = projects) {
+                projectsGrid.innerHTML = '';
+                
+                filteredProjects.forEach(project => {
+                    const projectCard = document.createElement('div');
+                    projectCard.className = 'project-card';
+                    projectCard.dataset.id = project.id;
+                    projectCard.dataset.type = project.type;
+                    projectCard.dataset.size = getSizeCategory(project.size);
+                    projectCard.dataset.year = project.year;
+                    
+                    projectCard.innerHTML = `
+                        <img src="${project.image}" alt="${project.title}">
+                        <div class="project-info">
+                            <h3>${project.title}</h3>
+                            <p>${project.description}</p>
+                            <div class="project-meta">
+                                <span class="project-type">${getTypeName(project.type)}</span>
+                                <span class="project-size">${project.size} м²</span>
+                                <span class="project-year">${project.year}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    projectsGrid.appendChild(projectCard);
+                });
+            }
+            
+    
+            function getSizeCategory(size) {
+                if (size < 100) return 'small';
+                if (size <= 200) return 'medium';
+                return 'large';
+            }
+            
+            function getTypeName(type) {
+                const types = {
+                    'cottage': 'Коттедж',
+                    'townhouse': 'Таунхаус',
+                    'apartment': 'Многоэтажка'
+                };
+                return types[type] || type;
+            }
+            
+            function filterProjects() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const typeValue = typeFilter.value;
+                const sizeValue = sizeFilter.value;
+                const yearValue = yearFilter.value;
+                
+                const filtered = projects.filter(project => {
+                    // Поиск по тексту
+                    const matchesSearch = project.title.toLowerCase().includes(searchTerm) || 
+                                        project.description.toLowerCase().includes(searchTerm);
+                    
+                    // Фильтр по типу
+                    const matchesType = typeValue === 'all' || project.type === typeValue;
+                    
+                    // Фильтр по размеру
+                    let matchesSize = true;
+                    if (sizeValue !== 'all') {
+                        const sizeCat = getSizeCategory(project.size);
+                        matchesSize = sizeCat === sizeValue;
+                    }
+                    
+                    // Фильтр по году
+                    const matchesYear = yearValue === 'all' || project.year.toString() === yearValue;
+                    
+                    return matchesSearch && matchesType && matchesSize && matchesYear;
+                });
+                
+                displayProjects(filtered);
+            }
+            
+           
+            searchBtn.addEventListener('click', filterProjects);
+            searchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') filterProjects();
+            });
+            
+            typeFilter.addEventListener('change', filterProjects);
+            sizeFilter.addEventListener('change', filterProjects);
+            yearFilter.addEventListener('change', filterProjects);
+            
+            displayProjects();
+        });
+    </script>
+</body>
+</html>
