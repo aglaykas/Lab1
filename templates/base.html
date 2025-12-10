@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Строительная компания "Бобры"{% endblock %}</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+  {% if page == 'about' %}
+    <link rel="stylesheet" href="{% static 'about.css' %}">
+  {% endif %}
+  <link rel="icon" href="{% static 'image/building_city_icon_263721.ico' %}" type="image/x-icon">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <header>
+    <h1>Строительная Компания "Бобры"</h1>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <nav>
+        <a href="{% url 'index' %}">Главная</a>
+        <a href="{% url 'about' %}">О нас</a>
+        <a href="{% url 'services' %}">Услуги</a>
+        <a href="{% url 'portfolio' %}">Портфолио</a>
+        <a href="{% url 'contacts' %}">Контакты</a>
+      </nav>
+      <div style="text-align: right; font-size: 14px;">
+        <span id="user-status">Вы — гость</span>
+        <button onclick="openAuthModal()" id="auth-link" style="margin-left: 10px; padding: 4px 8px;">Войти</button>
+        <button onclick="logout()" id="logout-btn" style="display:none; margin-left: 10px; padding: 4px 8px;">Выйти</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    <p>&copy; Строительная компания "Бобры", 2025</p>
+  </footer>
+
+  {% include "auth_modal.html" %}
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

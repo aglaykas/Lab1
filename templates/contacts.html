@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Контакты - Строительная компания "Бобры"{% endblock %}
+{% block content %}
+<main>
+  <section class="contact-info">
+    <h2>Наши контакты</h2>
+    <p>Адрес: Россия, г. Йошкар-Ола, Песчаная ул., д. 24 кв.102</p>
+    <p>Телефон: +7(982)303-977-7</p>
+    <p>Email: <a href="mailto:company@bk.com">company@bk.com</a></p>
+  </section>
+
+  <section class="contact-form">
+    <h2>Свяжитесь с нами</h2>
+    <form id="contact-form">
+      <label for="name">Имя:</label><br>
+      <input type="text" id="name" name="name" required><br><br>
+      <label for="email">Email:</label><br>
+      <input type="email" id="email" name="email" required><br><br>
+      <label for="phone">Телефон:</label><br>
+      <input type="tel" id="phone" name="phone"><br><br>
+      <label for="message">Сообщение:</label><br>
+      <textarea id="message" name="message" rows="5" required></textarea><br><br>
+      <input type="submit" value="Отправить">
+    </form>
+  </section>
+</main>
+
+<script>
+  document.getElementById('contact-form').onsubmit = async (e) => {
+    e.preventDefault();
+    // Здесь можно отправить на backend, но пока просто имитация
+    alert('Форма отправлена! (В будущем — через API)');
+  };
+</script>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Услуги - Строительная компания "Бобры"{% endblock %}
+{% block content %}
+<main>
+  <section class="service-section" id="residential">
+    <h2>Строительство жилых домов</h2>
+    <div class="service-items">
+      <div class="service-item">
+        <h3>Коттеджи</h3>
+        <p>Индивидуальное проектирование и строительство коттеджей под ключ.</p>
+        <img src="{% static 'image/kot1.png' %}" alt="Коттедж">
+      </div>
+      <div class="service-item">
+        <h3>Таунхаусы</h3>
+        <p>Строительство комфортабельных таунхаусов с учетом всех современных требований.</p>
+        <img src="{% static 'image/taun1.png' %}" alt="Таунхаус">
+      </div>
+    </div>
+  </section>
+
+  <section class="service-section" id="commercial">
+    <h2>Строительство коммерческой недвижимости</h2>
+    <div class="service-items">
+      <div class="service-item">
+        <h3>Многоэтажные здания</h3>
+        <p>Проектирование и строительство многоэтажных зданий различного назначения.</p>
+        <img src="{% static 'image/zd1.png' %}" alt="Многоэтажное здание">
+      </div>
+      <div class="service-item">
+        <h3>Офисные центры</h3>
+        <p>Строительство современных и функциональных офисных центров.</p>
+        <img src="{% static 'image/office.png' %}" alt="Офисный центр">
+      </div>
+    </div>
+  </section>
+
+  <section class="request-section" style="text-align: center; padding: 40px 20px;">
+  <h2>Хотите построить дом?</h2>
+  <p>Оставьте заявку, и мы свяжемся с вами в течение 24 часов.</p>
+
+  <div id="request-form-container" style="max-width: 500px; margin: 20px auto;">
+    <form id="service-request-form">
+      <div style="margin-bottom: 15px; text-align: left;">
+        <label for="service-select">Выберите услугу:</label>
+        <select id="service-select" name="service" required style="width: 100%; padding: 8px;">
+          <option value="">— Выберите —</option>
+          <option value="1">Коттедж</option>
+          <option value="2">Таунхаус</option>
+          <option value="3">Многоэтажное здание</option>
+          <option value="4">Офисный центр</option>
+        </select>
+      </div>
+      <div style="margin-bottom: 15px; text-align: left;">
+        <label for="request-description">Описание проекта:</label>
+        <textarea id="request-description" name="description" rows="4" required style="width: 100%; padding: 8px;"></textarea>
+      </div>
+      <button type="submit" class="btn" style="background-color: #28a745; color: white; padding: 10px 20px;">Отправить заявку</button>
+    </form>
+    <div id="request-message" style="margin-top: 15px; min-height: 24px; font-weight: bold;"></div>
+  </div>
+</section>
+</main>
+
+<script>
+document.getElementById('service-request-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const token = localStorage.getItem('authToken');
+  if (!token) {
+    document.getElementById('request-message').innerHTML = '<span style="color: red;">Сначала войдите или зарегистрируйтесь!</span>';
+    openAuthModal();
+    return;
+  }
+
+  const serviceId = document.getElementById('service-select').value;
+  const description = document.getElementById('request-description').value.trim();
+
+  if (!serviceId || !description) {
+    document.getElementById('request-message').innerHTML = '<span style="color: red;">Заполните все поля!</span>';
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/requests/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        service: parseInt(serviceId),
+        description: description
+      })
+    });
+
+    const result = await res.json();
+    const messageEl = document.getElementById('request-message');
+
+    if (res.ok) {
+      messageEl.innerHTML = '<span style="color: green;">✅ Заявка отправлена! Мы скоро свяжемся с вами.</span>';
+      document.getElementById('service-request-form').reset();
+    } else {
+      console.error('Ошибка API:', result);
+      let errorMsg = 'Ошибка отправки заявки.';
+      if (result.service) errorMsg = 'Неверная услуга.';
+      if (result.description) errorMsg = 'Описание слишком короткое.';
+      messageEl.innerHTML = `<span style="color: red;">❌ ${errorMsg}</span>`;
+    }
+  } catch (err) {
+    console.error(err);
+    document.getElementById('request-message').innerHTML = '<span style="color: red;">❌ Не удалось подключиться к серверу.</span>';
+  }
+});
+</script>
+{% endblock %}

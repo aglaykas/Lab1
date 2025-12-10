@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="hero">
+  <h2 style="color: #bbff00">Строим будущее вместе</h2>
+  <p>Строительство домов и зданий для физических и юридических лиц.</p>
+  <a href="{% url 'services' %}" class="btn">Узнать больше</a>
+</section>
+
+<div class="animation-container">
+  <h2>Строительство коттеджа</h2>
+  <div class="animation-controls">
+    <button id="play-btn">Запустить</button>
+    <button id="pause-btn">Пауза</button>
+    <button id="reset-btn">Сброс</button>
+  </div>
+  <svg id="cottage-animation" viewBox="0 0 600 300">
+    <rect width="100%" height="100%" fill="#87CEEB" />
+    <rect y="250" width="100%" height="50" fill="#2E8B57" />
+    <rect id="foundation" x="200" y="250" width="200" height="20" fill="#A0522D" visibility="hidden" />
+    <rect id="walls" x="220" y="190" width="160" height="60" fill="#F5DEB3" visibility="hidden" />
+    <polygon id="roof" points="200,190 400,190 300,130" fill="#8B4513" visibility="hidden" />
+    <rect id="window" x="240" y="200" width="40" height="30" fill="#ADD8E6" visibility="hidden" />
+    <rect id="door" x="280" y="220" width="40" height="30" fill="#8B4513" visibility="hidden" />
+  </svg>
+</div>
+
+<script>
+  const elements = [
+    { id: "foundation", delay: 0 },
+    { id: "walls", delay: 1000 },
+    { id: "roof", delay: 2000 },
+    { id: "window", delay: 3000 },
+    { id: "door", delay: 4000 }
+  ];
+  let animationTimeout;
+  let isPlaying = false;
+
+  function playAnimation() {
+    if (isPlaying) return;
+    isPlaying = true;
+    resetAnimation();
+    elements.forEach(el => {
+      animationTimeout = setTimeout(() => {
+        document.getElementById(el.id).setAttribute('visibility', 'visible');
+      }, el.delay);
+    });
+  }
+
+  function pauseAnimation() {
+    isPlaying = false;
+    clearTimeout(animationTimeout);
+  }
+
+  function resetAnimation() {
+    pauseAnimation();
+    elements.forEach(el => {
+      document.getElementById(el.id).setAttribute('visibility', 'hidden');
+    });
+  }
+
+  document.getElementById('play-btn').addEventListener('click', playAnimation);
+  document.getElementById('pause-btn').addEventListener('click', pauseAnimation);
+  document.getElementById('reset-btn').addEventListener('click', resetAnimation);
+</script>
+
+<section class="services">
+  <h2>Наши услуги</h2>
+  <div class="service">
+    <h3>Строительство коттеджей</h3>
+    <img src="{% static 'image/kot1.png' %}" alt="Коттедж">
+  </div>
+  <div class="service">
+    <h3>Строительство таунхаусов</h3>
+    <img src="{% static 'image/taun1.png' %}" alt="Таунхаус">
+  </div>
+  <div class="service">
+    <h3>Строительство многоэтажных зданий</h3>
+    <img src="{% static 'image/zd1.png' %}" alt="Многоэтажное здание">
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Выгрузка отчёта</title>
+</head>
+<body>
+  <h2>Генерация отчёта</h2>
+  <form method="post">
+    {% csrf_token %}
+    <label>Таблица:</label>
+    <select name="table" onchange="updateFields(this.value)">
+      <option value="">— Выберите —</option>
+      <option value="service">Услуги</option>
+      <option value="project">Проекты</option>
+      <option value="servicerequest">Заявки</option>
+      <option value="user">Пользователи</option>
+    </select>
+
+    <div id="fields-container" style="margin-top: 15px;">
+      <label>Поля:</label><br>
+      <div id="fields-checkboxes"></div>
+    </div>
+
+    <button type="submit" style="margin-top: 15px;">Скачать XLSX</button>
+  </form>
+
+  <script>
+    const fieldOptions = {
+      service: ['id', 'name', 'description', 'created_at', 'updated_at'],
+      project: ['id', 'title', 'description', 'service_id', 'area', 'year', 'created_at', 'updated_at'],
+      servicerequest: ['id', 'user_id', 'service_id', 'description', 'status', 'created_at', 'updated_at'],
+      user: ['id', 'username', 'email', 'role', 'date_joined', 'last_login']
+    };
+
+    function updateFields(table) {
+      const container = document.getElementById('fields-checkboxes');
+      container.innerHTML = '';
+      const fields = fieldOptions[table] || [];
+      fields.forEach(field => {
+        container.innerHTML += `
+          <label style="display: block; margin: 5px 0;">
+            <input type="checkbox" name="fields" value="${field}" checked> ${field}
+          </label>
+        `;
+      });
+    }
+  </script>
+</body>
+</html>

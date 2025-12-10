@@ -1,0 +1,137 @@
+<div id="auth-modal" class="modal">
+  <div class="modal-content">
+    <h3 id="auth-title">Вход</h3>
+    <div id="auth-form">
+      <div class="form-group">
+        <label for="login-username">Имя пользователя</label>
+        <input type="text" id="login-username" required>
+      </div>
+      <div class="form-group">
+        <label for="login-password">Пароль</label>
+        <input type="password" id="login-password" required>
+      </div>
+      <div class="btn-group">
+        <button id="login-submit">Войти</button>
+        <button id="switch-to-register">Регистрация</button>
+      </div>
+    </div>
+
+    <div id="register-form" style="display:none;">
+      <div class="form-group">
+        <label for="reg-username">Имя пользователя</label>
+        <input type="text" id="reg-username" required>
+      </div>
+      <div class="form-group">
+        <label for="reg-email">Email</label>
+        <input type="email" id="reg-email" required>
+      </div>
+      <div class="form-group">
+        <label for="reg-password">Пароль</label>
+        <input type="password" id="reg-password" required>
+      </div>
+      <div class="btn-group">
+        <button id="register-submit">Зарегистрироваться</button>
+        <button id="switch-to-login">Уже есть аккаунт?</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% load static %}
+<script>
+  let authToken = localStorage.getItem('authToken');
+  let userRole = localStorage.getItem('userRole');
+
+  function openAuthModal() {
+    document.getElementById('auth-modal').style.display = 'block';
+  }
+
+  window.onclick = function(event) {
+    const modal = document.getElementById('auth-modal');
+    if (event.target === modal) modal.style.display = 'none';
+  }
+
+  document.getElementById('switch-to-register').onclick = () => {
+    document.getElementById('auth-form').style.display = 'none';
+    document.getElementById('register-form').style.display = 'block';
+    document.getElementById('auth-title').textContent = 'Регистрация';
+  };
+  document.getElementById('switch-to-login').onclick = () => {
+    document.getElementById('register-form').style.display = 'none';
+    document.getElementById('auth-form').style.display = 'block';
+    document.getElementById('auth-title').textContent = 'Вход';
+  };
+
+  document.getElementById('login-submit').onclick = async () => {
+    const username = document.getElementById('login-username').value;
+    const password = document.getElementById('login-password').value;
+    const res = await fetch('/api/auth/login/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      localStorage.setItem('authToken', data.access);
+      const userRes = await fetch('/api/auth/user/', {
+        headers: { 'Authorization': 'Bearer ' + data.access }
+      });
+      const user = await userRes.json();
+      localStorage.setItem('userRole', user.role);
+      alert('Добро пожаловать, ' + username + '!');
+      document.getElementById('auth-modal').style.display = 'none';
+      location.reload();
+    } else {
+      alert('Ошибка входа: ' + (data.detail || 'неверные данные'));
+    }
+  };
+
+  document.getElementById('register-submit').onclick = async () => {
+    const username = document.getElementById('reg-username').value;
+    const email = document.getElementById('reg-email').value;
+    const password = document.getElementById('reg-password').value;
+    const res = await fetch('/api/auth/register/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, email, password })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      localStorage.setItem('authToken', data.access);
+      localStorage.setItem('userRole', data.user.role);
+      alert('Регистрация успешна!');
+      document.getElementById('auth-modal').style.display = 'none';
+      location.reload();
+    } else {
+      alert('Ошибка регистрации: ' + JSON.stringify(data));
+    }
+  };
+
+  window.logout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userRole');
+    alert('Вы вышли из системы');
+    location.reload();
+  };
+
+  window.onload = () => {
+    const token = localStorage.getItem('authToken');
+    const role = localStorage.getItem('userRole');
+    const statusEl = document.getElementById('user-status');
+    const authLink = document.getElementById('auth-link');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    if (token) {
+      let roleName = 'Пользователь';
+      if (role === 'admin') roleName = 'Администратор';
+      if (role === 'guest') roleName = 'Гость';
+      statusEl.textContent = 'Вы — ' + roleName;
+      authLink.style.display = 'none';
+      logoutBtn.style.display = 'inline-block';
+    } else {
+      statusEl.textContent = 'Вы — гость';
+      authLink.style.display = 'inline-block';
+      logoutBtn.style.display = 'none';
+    }
+  };
+</script>
