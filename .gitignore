@@ -1,3 +1,62 @@
-image/
-Lab1/
+# .gitignore
+
+# Виртуальное окружение
+venv/
+env/
+ENV/
+
+# Байт-код Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Логи и системные файлы macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+
+# ОС Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# IDE и редакторы
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Секреты и конфигурация
+*.env
+*.ini
+settings/local.py
+secrets.json
+
+# Django
+media/
+staticfiles/
+*.log
+db.sqlite3
+
+# Docker
+.dockerignore
+
+# Бинарные и временные файлы
+*.tmp
+*.bak
+*.old
+
+# Файлы проекта
+/site main.xcodeproj/
+/site main.xcworkspace/
+
+# Не отслеживать локальные HTML-копии (если они не нужны в репозитории)
+# (раскомментируйте, если используете шаблоны Django вместо статики)
+# *.html
+
+# Исключить загруженные пользователем медиа (оставить пустую папку для структуры, но не содержимое)
+/media/*
+
+# Не отслеживать локальные скриншоты или временные изображения
+/screenshots/

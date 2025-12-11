@@ -1,4 +1,3 @@
-# settings.py
 
 import os
 from pathlib import Path
@@ -85,5 +84,5 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
 
-CORS_ALLOW_ALL_ORIGINS = True  # для разработки
+CORS_ALLOW_ALL_ORIGINS = True  
 

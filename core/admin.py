@@ -7,11 +7,11 @@ from .models import Service, Project, ServiceRequest, User
 @admin.action(description='Выгрузить выбранные записи в XLSX')
 def export_as_xlsx(modeladmin, request, queryset):
     model = modeladmin.model
-    model_name = model._meta.model_name  # всегда строка
-    verbose_name_plural = str(model._meta.verbose_name_plural)  # явно конвертируем в строку
-    # Используем безопасный заголовок (макс. 31 символ для Excel)
+    model_name = model._meta.model_name 
+    verbose_name_plural = str(model._meta.verbose_name_plural)  
+    
     sheet_title = (verbose_name_plural[:30] if verbose_name_plural != 'service requests' else 'Заявки') or model_name
-    # Заголовки полей
+   
     field_names = [field.verbose_name or field.name for field in model._meta.fields]
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -22,9 +22,9 @@ def export_as_xlsx(modeladmin, request, queryset):
     wb = Workbook()
     ws = wb.active
     ws.title = sheet_title  
-    # Записываем заголовки
+    
     ws.append(field_names)
-    # Записываем данные
+
     for obj in queryset:
         row = []
         for field in model._meta.fields:

@@ -1,4 +1,4 @@
-# core/views.py
+
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -47,15 +47,10 @@ def create_service_request(request):
 def export_report(request):
     if request.user.role != 'admin':
         return Response({'error': 'Доступ запрещён'}, status=status.HTTP_403_FORBIDDEN)
-
-    # Получаем параметры из запроса
     table = request.GET.get('table')
-    fields = request.GET.getlist('fields')  # ?fields=id&fields=name
-
+    fields = request.GET.getlist('fields')  
     if not table or not fields:
         return Response({'error': 'Укажите таблицу и поля'}, status=status.HTTP_400_BAD_REQUEST)
-
-    # Поддерживаемые таблицы
     models_map = {
         'user': User,
         'service': Service,
@@ -67,35 +62,25 @@ def export_report(request):
     if not model:
         return Response({'error': 'Недопустимая таблица'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Проверка, что поля существуют
     valid_fields = [f.name for f in model._meta.fields]
     for f in fields:
         if f not in valid_fields:
             return Response({'error': f'Поле "{f}" не существует в таблице "{table}"'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Получение данных
     queryset = model.objects.values(*fields)
 
-    # Создание Excel
     wb = Workbook()
     ws = wb.active
     ws.title = table.capitalize()
-
-    # Заголовки
     ws.append(fields)
-
-    # Данные
+  
     for row in queryset:
         ws.append([str(row.get(f, '')) for f in fields])
-
-    # Ответ
+   
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = f'attachment; filename={table}_export.xlsx'
     wb.save(response)
     return response
-from django.shortcuts import render
-
-# core/views.py
 from django.shortcuts import render
 
 def index(request):
@@ -123,48 +108,4 @@ def get_user_info(request):
         'email': request.user.email,
         'role': request.user.role
     })
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.contrib.auth.decorators import user_passes_test
-from openpyxl import Workbook
-from .models import Service, Project, ServiceRequest, User
 
-@user_passes_test(lambda u: u.is_superuser)
-def export_report_page(request):
-    if request.method == 'POST':
-        table = request.POST.get('table')
-        fields = request.POST.getlist('fields')
-
-        models_map = {
-            'service': Service,
-            'project': Project,
-            'servicerequest': ServiceRequest,
-            'user': User,
-        }
-
-        model = models_map.get(table)
-        if not model or not fields:
-            return HttpResponse('Неверные параметры', status=400)
-
-        # Проверка, что поля существуют
-        valid_fields = {f.name for f in model._meta.fields}
-        invalid = set(fields) - valid_fields
-        if invalid:
-            return HttpResponse(f'Недопустимые поля: {", ".join(invalid)}', status=400)
-
-        queryset = model.objects.all().values(*fields)
-
-        wb = Workbook()
-        ws = wb.active
-        ws.title = model._meta.verbose_name_plural or table
-
-        ws.append(fields)
-        for row in queryset:
-            ws.append([str(row.get(f, '')) for f in fields])
-
-        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = f'attachment; filename={table}_report.xlsx'
-        wb.save(response)
-        return response
-
-    return render(request, 'export_report.html')

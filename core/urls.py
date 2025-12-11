@@ -12,5 +12,4 @@ urlpatterns = [
     path('auth/register/', views.register, name='register'),
     path('auth/user/', views.get_user_info, name='user_info'),
     path('requests/', views.create_service_request, name='create_request'),
-    path('admin/export/', views.export_report, name='export_report'),
 ]

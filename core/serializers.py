@@ -1,4 +1,4 @@
-# core/serializers.py
+
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import Service, ServiceRequest
@@ -38,3 +38,4 @@ class ServiceRequestSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
         return super().create(validated_data)
+
